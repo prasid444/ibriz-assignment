@@ -1,9 +1,10 @@
-import { ContractPage } from 'features/contract/pages/ContractPage';
-import { HomePage } from 'features/home/pages/HomePage';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './App.css';
+
+import { ContractPage } from './features/contract/pages/ContractPage';
+import { HomePage } from './features/home/pages/HomePage';
 
 function App() {
   return (
