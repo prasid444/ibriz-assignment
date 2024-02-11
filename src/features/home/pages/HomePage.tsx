@@ -1,12 +1,16 @@
 /* eslint-disable no-console */
 import { Button, message } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useConnect } from 'wagmi';
+import { useConnect, useDisconnect } from 'wagmi';
 
 export const HomePage = () => {
   const { connectors, connect } = useConnect();
   const navigate = useNavigate();
+  const { disconnect } = useDisconnect();
+  useEffect(() => {
+    disconnect();
+  }, []);
   // const connectors: Connector[] = [];
   return (
     <div className="h-screen bg-primary flex flex-row items-center justify-center">
@@ -23,6 +27,7 @@ export const HomePage = () => {
             {connectors.map((value) => {
               return (
                 <Button
+                  key={value.id}
                   size="large"
                   type="primary"
                   className="bg-primary min-w-[200px]"
@@ -34,17 +39,13 @@ export const HomePage = () => {
                       {
                         onSuccess(data, variables, context) {
                           navigate({
-                            pathname: '/contract',
-                            search: `?addr=${data.accounts[0]}`,
+                            pathname: `/contract/${data.accounts[0]}`,
                           });
                         },
                         onError(error, variables, context) {
                           message.error(error.message);
                         },
-                        onSettled(data, error, variables, context) {
-                          console.log('dasd', data, error, variables, context);
-                          message.success('setled');
-                        },
+                        onSettled(data, error, variables, context) {},
                       }
                     );
                   }}
