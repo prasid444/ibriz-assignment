@@ -11,6 +11,11 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <ConfigProvider
+      divider={{
+        style: {
+          margin: 0,
+        },
+      }}
       theme={{
         token: {
           colorPrimary: '#DF5627',
