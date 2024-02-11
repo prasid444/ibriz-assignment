@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, Divider, Form, InputNumber } from 'antd';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useAccount, useReadContract } from 'wagmi';
 import { z } from 'zod';
 
 import { FormStatus } from '../utils/types';
@@ -16,7 +18,7 @@ const schema = z.object({
     .positive('Token Count must be greated than 0'),
 });
 
-export const MintTokenView = () => {
+export const MintTokenView = ({ address }: { address: `0x${string}` }) => {
   const {
     register,
     handleSubmit,
@@ -25,6 +27,18 @@ export const MintTokenView = () => {
   } = useForm({
     resolver: zodResolver(schema),
   });
+
+  const {
+    data: balance,
+    isFetching,
+    isPending,
+    error,
+  } = useReadContract({
+    functionName: 'balanceOf',
+    args: [address],
+    // abi:wagmigotchiABI
+  });
+  console.log('balance', { balance, error, isPending });
   const [formStatus, setFormStatus] = useState<FormStatus>({
     loading: false,
     error: null,
@@ -33,7 +47,7 @@ export const MintTokenView = () => {
 
   const onSubmit = async (data: any) => {
     setFormStatus({ ...formStatus, loading: true });
-
+    const { address } = useAccount();
     // randome error or success emulation
     const isSuccess = parseInt(`${Math.random() * 100}`) % 2;
     setTimeout(() => {

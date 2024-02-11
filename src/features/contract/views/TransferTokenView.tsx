@@ -1,16 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, Divider, Form, Input, InputNumber } from 'antd';
-import { useState } from 'react';
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { parseEther } from 'viem';
+import { useSendTransaction } from 'wagmi';
 import { z } from 'zod';
 
-import { FormStatus } from '../utils/types';
-
 const schema = z.object({
-  eth_address: z.string({
-    required_error: 'Ether Address is required',
-    invalid_type_error: 'Token Count should be a number',
-  }),
+  eth_address: z
+    .string({
+      invalid_type_error: 'Token Count should be a number',
+    })
+    .min(1, 'Ether Address is required'),
   amount: z
     .number({
       required_error: 'Amount is required',
@@ -28,34 +29,17 @@ export const TransferTokenView = () => {
   } = useForm({
     resolver: zodResolver(schema),
   });
-  const [formStatus, setFormStatus] = useState<FormStatus>({
-    loading: false,
-    error: null,
-    success: null,
-  });
-
+  const {
+    data: hash,
+    sendTransaction,
+    isError,
+    isPending,
+    isSuccess,
+    isPaused,
+    error,
+  } = useSendTransaction();
   const onSubmit = async (data: any) => {
-    setFormStatus({ ...formStatus, loading: true });
-
-    // randome error or success emulation
-    const isSuccess = parseInt(`${Math.random() * 100}`) % 2;
-    setTimeout(() => {
-      if (isSuccess) {
-        setFormStatus({
-          ...formStatus,
-          success: 'Tokens minted successfully!',
-          error: null,
-          loading: false,
-        });
-      } else {
-        setFormStatus({
-          ...formStatus,
-          success: null,
-          error: 'Failed Minting token',
-          loading: false,
-        });
-      }
-    }, 2000);
+    sendTransaction({ to: data?.eth_address, value: parseEther(`${data?.amount}`) });
   };
   return (
     <div className="flex flex-col gap-4">
@@ -67,7 +51,11 @@ export const TransferTokenView = () => {
           tooltip="Enter the ether address of receipient."
           required
         >
-          <Input {...register('eth_address')} size="large" />
+          <Controller
+            control={control}
+            name="eth_address"
+            render={({ field }) => <Input className="w-full" size="large" {...field} />}
+          />
           {errors.eth_address && (
             <p className="text-error">{errors.eth_address.message as string}</p>
           )}
@@ -82,8 +70,8 @@ export const TransferTokenView = () => {
           />
           {errors.amount && <p className="text-error">{errors.amount.message as string} </p>}
         </Form.Item>
-        {formStatus.error && <Alert message={formStatus.error} type="error" showIcon />}
-        {formStatus.success && <Alert message={formStatus.success} type="success" showIcon />}
+        {error && <Alert message={error.message} type="error" showIcon />}
+        {/* {formStatus.success && <Alert message={formStatus.success} type="success" showIcon />} */}
         <div className="py-4">
           <Form.Item>
             <Button
@@ -92,7 +80,7 @@ export const TransferTokenView = () => {
               className="bg-primary"
               type="primary"
               htmlType="submit"
-              loading={formStatus.loading}
+              loading={isPending}
             >
               Transfer
             </Button>

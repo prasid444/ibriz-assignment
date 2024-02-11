@@ -1,20 +1,28 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { WagmiProvider } from 'wagmi';
 
 import './App.css';
 
-import { ContractPage } from './features/contract/pages/ContractPage';
 import { HomePage } from './features/home/pages/HomePage';
+const queryClient = new QueryClient();
+import { config } from './config/wagmiconfig';
+import { ContractPage } from './features/contract/pages/ContractPage';
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" Component={HomePage} />
-        <Route path="/contract" Component={ContractPage} />
-        {/* TODO: To add redirection or no page found */}
-        <Route path="*" Component={HomePage} />
-      </Routes>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <Routes>
+            <Route path="/" Component={HomePage} />
+            <Route path="/contract/:id" Component={ContractPage} />
+            {/* TODO: To add redirection or no page found */}
+            <Route path="*" Component={HomePage} />
+          </Routes>
+        </QueryClientProvider>
+      </WagmiProvider>
     </BrowserRouter>
   );
 }
