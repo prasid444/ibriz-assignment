@@ -9,7 +9,7 @@ import { FormStatus } from '../utils/types';
 const schema = z.object({
   token_count: z
     .number({
-      required_error: 'Token Count Field is required',
+      required_error: 'Token Count is required',
       invalid_type_error: 'Token Count should be a number',
     })
     .int('Token Count must be an integer')
@@ -56,10 +56,10 @@ export const MintTokenView = () => {
   };
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-primary text-2xl font-bold text-center">Welcome To Mint Token Form</h1>
+      <h1 className="text-primary text-2xl font-bold text-center">Mint Token Form</h1>
       <Divider />
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        <Form.Item label="Token to Mint" required>
+        <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
           <Controller
             control={control}
             name="token_count"
@@ -68,7 +68,7 @@ export const MintTokenView = () => {
             )}
           />
           {errors.token_count && (
-            <Alert message={errors.token_count.message as string} type="error" showIcon />
+            <p className="text-error">{errors.token_count.message as string}</p>
           )}
         </Form.Item>
         {formStatus.error && <Alert message={formStatus.error} type="error" showIcon />}
