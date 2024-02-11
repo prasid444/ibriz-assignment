@@ -35,7 +35,7 @@ export const MintTokenView = () => {
     setFormStatus({ ...formStatus, loading: true });
 
     // randome error or success emulation
-    const isSuccess = (Math.random() * 100) % 2;
+    const isSuccess = parseInt(`${Math.random() * 100}`) % 2;
     setTimeout(() => {
       if (isSuccess) {
         setFormStatus({
