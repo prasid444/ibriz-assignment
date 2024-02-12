@@ -28,7 +28,6 @@ export const ContractPage = () => {
       navigate('/');
     }
   }, [address]);
-  console.log('TEST', { isLoading, error, status, data });
 
   const steps: {
     [key: number]: {
@@ -44,15 +43,14 @@ export const ContractPage = () => {
       title: 'Mint Token',
       icon: <Hammer />,
       description: 'Mint token for your connected address.',
-      // TODO: when mint token is completed, navigate to step 2
-      content: <MintTokenView address={address as Address} />,
+      content: <MintTokenView address={address as Address} onClickNext={() => setActiveStep(1)} />,
     },
     1: {
       key: 1,
       title: 'Send Token',
       description: 'Send token to receipient',
       icon: <Send />,
-      content: <TransferTokenView />,
+      content: <TransferTokenView onClickPrevious={() => setActiveStep(0)} />,
     },
   };
 
@@ -71,21 +69,15 @@ export const ContractPage = () => {
       <div className="flex py-2 px-1 items-center bg-[#DF5627]">
         <div className="">
           <Link to={'/'}>
-            <Button
-              type="link"
-              icon={<ArrowLeft color="white" />}
-              onClick={() => {
-                // go back
-              }}
-            />
+            <Button type="link" icon={<ArrowLeft color="white" />} />
           </Link>
         </div>
         <div className="px-2 flex-1 flex items-center gap-2">
           <h1 className="text-xl font-bold text-white">Contract Page</h1>
         </div>
-        <div className="text-white text-xs">
+        {/* <div className="text-white text-xs">
           Balance: {formatEther(data?.value as bigint)} {data?.symbol}
-        </div>
+        </div> */}
       </div>
       <div className="p-4 flex-1">
         <div className="bg-white rounded-md">

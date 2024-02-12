@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Divider, Form, Input, InputNumber } from 'antd';
+import { Alert, Button, Divider, Form, Input, InputNumber, Spin } from 'antd';
+import { TEST_ADDRESS } from 'constants/address';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { parseEther } from 'viem';
-import { useSendTransaction } from 'wagmi';
+import { parseAbi } from 'viem';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -20,7 +21,7 @@ const schema = z.object({
     .positive('Amount must be greated than 0'),
 });
 
-export const TransferTokenView = () => {
+export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => void }) => {
   const {
     register,
     handleSubmit,
@@ -29,18 +30,33 @@ export const TransferTokenView = () => {
   } = useForm({
     resolver: zodResolver(schema),
   });
-  const {
-    data: hash,
-    sendTransaction,
-    isError,
-    isPending,
-    isSuccess,
-    isPaused,
-    error,
-  } = useSendTransaction();
+  // const {
+  //   data: hash,
+  //   sendTransaction,
+  //   isError,
+  //   isPending,
+  //   isSuccess,
+  //   isPaused,
+  //   error,
+  // } = useSendTransaction();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
+
   const onSubmit = async (data: any) => {
-    sendTransaction({ to: data?.eth_address, value: parseEther(`${data?.amount}`) });
+    //   sendTranwsaction({
+    //     to: data?.eth_address,
+    //     value: parseEther(`${data?.amount}`)
+    // });
+    writeContract({
+      address: TEST_ADDRESS,
+      abi: parseAbi(['function transfer(address receipientId, uint256 tokenId)']),
+      functionName: 'transfer',
+      args: [data?.eth_address, BigInt(data.amount)],
+    });
   };
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-primary text-2xl font-bold text-center">Transfer Token Form</h1>
@@ -70,8 +86,30 @@ export const TransferTokenView = () => {
           />
           {errors.amount && <p className="text-error">{errors.amount.message as string} </p>}
         </Form.Item>
-        {error && <Alert message={error.message} type="error" showIcon />}
-        {/* {formStatus.success && <Alert message={formStatus.success} type="success" showIcon />} */}
+        <div className="flex flex-col gap-2">
+          {error && <Alert message={error.message} type="error" showIcon />}
+          {hash && <Alert message={`Transaction Hash: ${hash}`} type="info" showIcon />}
+          {isConfirming && (
+            <Alert
+              message={`Waiting for confimation.... You can close this window to continue.`}
+              type="info"
+              showIcon
+              action={
+                <Button
+                  onClick={() => {
+                    onClickPrevious();
+                  }}
+                  size="small"
+                  type="text"
+                >
+                  Go To Mint
+                </Button>
+              }
+              icon={<Spin />}
+            />
+          )}
+          {isConfirmed && <Alert message={`Transaction Confirmed.`} type="success" showIcon />}
+        </div>
         <div className="py-4">
           <Form.Item>
             <Button

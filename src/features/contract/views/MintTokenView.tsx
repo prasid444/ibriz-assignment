@@ -4,7 +4,7 @@ import { Alert, Button, Divider, Form, InputNumber, Spin } from 'antd';
 import { TEST_ADDRESS } from 'constants/address';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Address, parseAbi } from 'viem';
+import { Address, parseAbi, parseEther } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
@@ -20,7 +20,13 @@ const schema = z.object({
     .positive('Token Count must be greated than 0'),
 });
 
-export const MintTokenView = ({ address }: { address: Address }) => {
+export const MintTokenView = ({
+  address,
+  onClickNext,
+}: {
+  address: Address;
+  onClickNext: () => void;
+}) => {
   const {
     register,
     handleSubmit,
@@ -58,7 +64,11 @@ export const MintTokenView = ({ address }: { address: Address }) => {
     <div className="flex flex-col gap-4">
       <h1 className="text-primary text-2xl font-bold text-center">Mint Token Form</h1>
       <Divider />
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+      <Form
+        disabled={isConfirming || isPending}
+        layout="vertical"
+        onFinish={handleSubmit(onSubmit)}
+      >
         <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
           <Controller
             control={control}
@@ -72,16 +82,34 @@ export const MintTokenView = ({ address }: { address: Address }) => {
           )}
         </Form.Item>
         <div className="flex flex-col gap-2">
-          {error && <Alert message={error.message} type="error" showIcon />}
+          {error && (
+            <Alert message={(error.name as string) + ' : ' + error.message} type="error" showIcon />
+          )}
           {hash && <Alert message={`Transaction Hash: ${hash}`} type="info" showIcon />}
           {isConfirming && (
-            <Alert message={`Waiting for confimation...`} type="info" showIcon icon={<Spin />} />
+            <Alert
+              message={`Waiting for confimation.... You can close this window to continue.`}
+              type="info"
+              showIcon
+              action={
+                <Button
+                  onClick={() => {
+                    onClickNext();
+                  }}
+                  size="small"
+                  type="text"
+                >
+                  Go To Transfer
+                </Button>
+              }
+              icon={<Spin />}
+            />
           )}
+          {isConfirmed && <Alert message={`Transaction Confirmed.`} type="success" showIcon />}
         </div>
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
-        <div className="py-4">
-          <Form.Item>
+
+        <Form.Item>
+          <div className="py-4 flex flex-row gap-2">
             <Button
               size="large"
               block
@@ -92,8 +120,19 @@ export const MintTokenView = ({ address }: { address: Address }) => {
             >
               Mint Tokens
             </Button>
-          </Form.Item>
-        </div>
+            <Button
+              size="large"
+              block
+              // className="bg-secondary hover:bg-opacity-50 hover:bg-secondary"
+              type="default"
+              onClick={() => {
+                onClickNext();
+              }}
+            >
+              Go To Transfer
+            </Button>
+          </div>
+        </Form.Item>
       </Form>
     </div>
   );
