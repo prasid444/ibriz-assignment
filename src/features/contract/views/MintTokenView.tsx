@@ -49,7 +49,7 @@ export const MintTokenView = ({
       address: TEST_ADDRESS,
       abi: parseAbi(['function mint(uint256 tokenId)']),
       functionName: 'mint',
-      args: [parseEther(data.token_count)],
+      args: [parseEther(`${data.token_count}`)],
     });
   };
 
@@ -76,8 +76,8 @@ export const MintTokenView = ({
           )}
           {hash && (
             <Alert
-              message={`Transaction Hash: ${hash}`}
-              type="info"
+              message={`Transaction Completed. Txn Hash: ${hash}`}
+              type="success"
               showIcon
               action={
                 <Button
@@ -90,7 +90,6 @@ export const MintTokenView = ({
                   Go To Transfer
                 </Button>
               }
-              icon={<Spin />}
             />
           )}
         </div>

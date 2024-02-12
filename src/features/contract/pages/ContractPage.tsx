@@ -75,9 +75,9 @@ export const ContractPage = () => {
         <div className="px-2 flex-1 flex items-center gap-2">
           <h1 className="text-xl font-bold text-white">Contract Page</h1>
         </div>
-        {/* <div className="text-white text-xs">
+        <div className="text-white text-xs">
           Balance: {formatEther(data?.value as bigint)} {data?.symbol}
-        </div> */}
+        </div>
       </div>
       <div className="p-4 flex-1">
         <div className="bg-white rounded-md">

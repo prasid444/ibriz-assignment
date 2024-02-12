@@ -50,7 +50,7 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
       address: TEST_ADDRESS,
       abi: parseAbi(['function transfer(address receipientId, uint256 tokenId)']),
       functionName: 'transfer',
-      args: [data?.eth_address, parseEther(data.amount)],
+      args: [data?.eth_address, parseEther(`${data.amount}`)],
     });
   };
 
