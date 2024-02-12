@@ -9,6 +9,7 @@ export const HomePage = () => {
   const navigate = useNavigate();
   const { disconnect } = useDisconnect();
   useEffect(() => {
+    // disconnect any existing connection
     disconnect();
   }, []);
   // const connectors: Connector[] = [];
@@ -35,7 +36,7 @@ export const HomePage = () => {
                     // value.getAccounts().
                     // const chainID = await value.getChainId();
                     connect(
-                      { chainId: 1, connector: value },
+                      { chainId: 5, connector: value },
                       {
                         onSuccess(data, variables, context) {
                           navigate({
