@@ -5,7 +5,7 @@ import { TEST_ADDRESS } from 'constants/address';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Address, parseAbi, parseEther } from 'viem';
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
 import { FormStatus } from '../utils/types';
@@ -49,26 +49,15 @@ export const MintTokenView = ({
       address: TEST_ADDRESS,
       abi: parseAbi(['function mint(uint256 tokenId)']),
       functionName: 'mint',
-      args: [BigInt(data.token_count)],
+      args: [parseEther(data.token_count)],
     });
   };
 
-  const {
-    isLoading: isConfirming,
-    isSuccess: isConfirmed,
-    error: errorConfirmed,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-primary text-2xl font-bold text-center">Mint Token Form</h1>
       <Divider />
-      <Form
-        disabled={isConfirming || isPending}
-        layout="vertical"
-        onFinish={handleSubmit(onSubmit)}
-      >
+      <Form disabled={isPending} layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
           <Controller
             control={control}
@@ -85,10 +74,9 @@ export const MintTokenView = ({
           {error && (
             <Alert message={(error.name as string) + ' : ' + error.message} type="error" showIcon />
           )}
-          {hash && <Alert message={`Transaction Hash: ${hash}`} type="info" showIcon />}
-          {isConfirming && (
+          {hash && (
             <Alert
-              message={`Waiting for confimation.... You can close this window to continue.`}
+              message={`Transaction Hash: ${hash}`}
               type="info"
               showIcon
               action={
@@ -105,7 +93,6 @@ export const MintTokenView = ({
               icon={<Spin />}
             />
           )}
-          {isConfirmed && <Alert message={`Transaction Confirmed.`} type="success" showIcon />}
         </div>
 
         <Form.Item>
@@ -116,7 +103,7 @@ export const MintTokenView = ({
               className="bg-primary"
               type="primary"
               htmlType="submit"
-              loading={isPending || isConfirming}
+              loading={isPending}
             >
               Mint Tokens
             </Button>

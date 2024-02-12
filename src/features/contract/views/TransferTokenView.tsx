@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Divider, Form, Input, InputNumber, Spin } from 'antd';
+import { Alert, Button, Divider, Form, Input, InputNumber } from 'antd';
 import { TEST_ADDRESS } from 'constants/address';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { parseAbi } from 'viem';
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { parseAbi, parseEther } from 'viem';
+import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -50,12 +50,9 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
       address: TEST_ADDRESS,
       abi: parseAbi(['function transfer(address receipientId, uint256 tokenId)']),
       functionName: 'transfer',
-      args: [data?.eth_address, BigInt(data.amount)],
+      args: [data?.eth_address, parseEther(data.amount)],
     });
   };
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -88,10 +85,9 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
         </Form.Item>
         <div className="flex flex-col gap-2">
           {error && <Alert message={error.message} type="error" showIcon />}
-          {hash && <Alert message={`Transaction Hash: ${hash}`} type="info" showIcon />}
-          {isConfirming && (
+          {hash && (
             <Alert
-              message={`Waiting for confimation.... You can close this window to continue.`}
+              message={`Transaction Hash: ${hash}`}
               type="info"
               showIcon
               action={
@@ -105,10 +101,8 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
                   Go To Mint
                 </Button>
               }
-              icon={<Spin />}
             />
           )}
-          {isConfirmed && <Alert message={`Transaction Confirmed.`} type="success" showIcon />}
         </div>
         <div className="py-4">
           <Form.Item>
