@@ -49,7 +49,7 @@ export const MintTokenView = ({
       address: TEST_ADDRESS,
       abi: parseAbi(['function mint(uint256 tokenId)']),
       functionName: 'mint',
-      args: [BigInt(data.token_count)],
+      args: [parseEther(data.token_count)],
     });
   };
 

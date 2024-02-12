@@ -3,7 +3,7 @@ import { Alert, Button, Divider, Form, Input, InputNumber, Spin } from 'antd';
 import { TEST_ADDRESS } from 'constants/address';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { parseAbi } from 'viem';
+import { parseAbi, parseEther } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
@@ -50,7 +50,7 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
       address: TEST_ADDRESS,
       abi: parseAbi(['function transfer(address receipientId, uint256 tokenId)']),
       functionName: 'transfer',
-      args: [data?.eth_address, BigInt(data.amount)],
+      args: [data?.eth_address, parseEther(data.amount)],
     });
   };
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
