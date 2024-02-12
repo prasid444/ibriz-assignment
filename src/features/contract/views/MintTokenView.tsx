@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Divider, Form, InputNumber } from 'antd';
+import { Alert, Button, Divider, Form, InputNumber, Spin } from 'antd';
+import { TEST_ADDRESS } from 'constants/address';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useAccount, useReadContract } from 'wagmi';
+import { Address, parseAbi, parseEther } from 'viem';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
 import { FormStatus } from '../utils/types';
@@ -18,7 +20,13 @@ const schema = z.object({
     .positive('Token Count must be greated than 0'),
 });
 
-export const MintTokenView = ({ address }: { address: `0x${string}` }) => {
+export const MintTokenView = ({
+  address,
+  onClickNext,
+}: {
+  address: Address;
+  onClickNext: () => void;
+}) => {
   const {
     register,
     handleSubmit,
@@ -28,17 +36,7 @@ export const MintTokenView = ({ address }: { address: `0x${string}` }) => {
     resolver: zodResolver(schema),
   });
 
-  const {
-    data: balance,
-    isFetching,
-    isPending,
-    error,
-  } = useReadContract({
-    functionName: 'balanceOf',
-    args: [address],
-    // abi:wagmigotchiABI
-  });
-  console.log('balance', { balance, error, isPending });
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
   const [formStatus, setFormStatus] = useState<FormStatus>({
     loading: false,
     error: null,
@@ -47,32 +45,30 @@ export const MintTokenView = ({ address }: { address: `0x${string}` }) => {
 
   const onSubmit = async (data: any) => {
     setFormStatus({ ...formStatus, loading: true });
-    const { address } = useAccount();
-    // randome error or success emulation
-    const isSuccess = parseInt(`${Math.random() * 100}`) % 2;
-    setTimeout(() => {
-      if (isSuccess) {
-        setFormStatus({
-          ...formStatus,
-          success: 'Tokens minted successfully!',
-          error: null,
-          loading: false,
-        });
-      } else {
-        setFormStatus({
-          ...formStatus,
-          success: null,
-          error: 'Failed Minting token',
-          loading: false,
-        });
-      }
-    }, 2000);
+    writeContract({
+      address: TEST_ADDRESS,
+      abi: parseAbi(['function mint(uint256 tokenId)']),
+      functionName: 'mint',
+      args: [BigInt(data.token_count)],
+    });
   };
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: errorConfirmed,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-primary text-2xl font-bold text-center">Mint Token Form</h1>
       <Divider />
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+      <Form
+        disabled={isConfirming || isPending}
+        layout="vertical"
+        onFinish={handleSubmit(onSubmit)}
+      >
         <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
           <Controller
             control={control}
@@ -85,22 +81,58 @@ export const MintTokenView = ({ address }: { address: `0x${string}` }) => {
             <p className="text-error">{errors.token_count.message as string}</p>
           )}
         </Form.Item>
-        {formStatus.error && <Alert message={formStatus.error} type="error" showIcon />}
-        {formStatus.success && <Alert message={formStatus.success} type="success" showIcon />}
-        <div className="py-4">
-          <Form.Item>
+        <div className="flex flex-col gap-2">
+          {error && (
+            <Alert message={(error.name as string) + ' : ' + error.message} type="error" showIcon />
+          )}
+          {hash && <Alert message={`Transaction Hash: ${hash}`} type="info" showIcon />}
+          {isConfirming && (
+            <Alert
+              message={`Waiting for confimation.... You can close this window to continue.`}
+              type="info"
+              showIcon
+              action={
+                <Button
+                  onClick={() => {
+                    onClickNext();
+                  }}
+                  size="small"
+                  type="text"
+                >
+                  Go To Transfer
+                </Button>
+              }
+              icon={<Spin />}
+            />
+          )}
+          {isConfirmed && <Alert message={`Transaction Confirmed.`} type="success" showIcon />}
+        </div>
+
+        <Form.Item>
+          <div className="py-4 flex flex-row gap-2">
             <Button
               size="large"
               block
               className="bg-primary"
               type="primary"
               htmlType="submit"
-              loading={formStatus.loading}
+              loading={isPending || isConfirming}
             >
               Mint Tokens
             </Button>
-          </Form.Item>
-        </div>
+            <Button
+              size="large"
+              block
+              // className="bg-secondary hover:bg-opacity-50 hover:bg-secondary"
+              type="default"
+              onClick={() => {
+                onClickNext();
+              }}
+            >
+              Go To Transfer
+            </Button>
+          </div>
+        </Form.Item>
       </Form>
     </div>
   );

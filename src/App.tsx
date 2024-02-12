@@ -5,10 +5,11 @@ import { WagmiProvider } from 'wagmi';
 
 import './App.css';
 
-import { HomePage } from './features/home/pages/HomePage';
 const queryClient = new QueryClient();
+import { ContractPage } from 'features/contract/pages/ContractPage';
+import { HomePage } from 'features/home/pages/HomePage';
+
 import { config } from './config/wagmiconfig';
-import { ContractPage } from './features/contract/pages/ContractPage';
 
 function App() {
   return (
