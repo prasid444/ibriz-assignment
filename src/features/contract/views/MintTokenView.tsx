@@ -55,8 +55,6 @@ export const MintTokenView = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-primary text-2xl font-bold text-center">Mint Token Form</h1>
-      <Divider />
       <Form disabled={isPending} layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
           <Controller
@@ -95,29 +93,16 @@ export const MintTokenView = ({
         </div>
 
         <Form.Item>
-          <div className="py-4 flex flex-row gap-2">
-            <Button
-              size="large"
-              block
-              className="bg-primary"
-              type="primary"
-              htmlType="submit"
-              loading={isPending}
-            >
-              Mint Tokens
-            </Button>
-            <Button
-              size="large"
-              block
-              // className="bg-secondary hover:bg-opacity-50 hover:bg-secondary"
-              type="default"
-              onClick={() => {
-                onClickNext();
-              }}
-            >
-              Go To Transfer
-            </Button>
-          </div>
+          <Button
+            size="large"
+            block
+            className="bg-primary"
+            type="primary"
+            htmlType="submit"
+            loading={isPending}
+          >
+            Mint Tokens
+          </Button>
         </Form.Item>
       </Form>
     </div>

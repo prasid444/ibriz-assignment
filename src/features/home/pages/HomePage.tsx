@@ -26,11 +26,13 @@ export const HomePage = () => {
         ) : (
           <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             {connectors.map((value) => {
+              console.log('icon', value, value.icon);
               return (
                 <Button
                   key={value.id}
                   size="large"
                   type="primary"
+                  icon={<img className="h-8" src={value.icon} />}
                   className="bg-primary min-w-[200px]"
                   onClick={() => {
                     // value.getAccounts().

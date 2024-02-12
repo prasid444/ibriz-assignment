@@ -56,8 +56,6 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-primary text-2xl font-bold text-center">Transfer Token Form</h1>
-      <Divider />
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
           label="Receipient's Ether Address"
@@ -104,7 +102,7 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
             />
           )}
         </div>
-        <div className="py-4">
+        <div className="">
           <Form.Item>
             <Button
               size="large"
