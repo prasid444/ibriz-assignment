@@ -1,23 +1,22 @@
 /* eslint-disable no-console */
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Divider, Form, InputNumber, Spin } from 'antd';
+import { Alert, Button } from 'antd';
+import { AmountInput } from 'components';
 import { TEST_ADDRESS } from 'constants/address';
-import React, { useState } from 'react';
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Address, parseAbi, parseEther } from 'viem';
+import { Address, TransactionExecutionError, parseAbi, parseEther } from 'viem';
+import { ErrorType } from 'viem/_types/errors/utils';
 import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
-
-import { FormStatus } from '../utils/types';
 
 const schema = z.object({
   token_count: z
     .number({
-      required_error: 'Token Count is required',
-      invalid_type_error: 'Token Count should be a number',
+      required_error: 'Token Amount is required',
+      invalid_type_error: 'Token Amount should be a number',
     })
-    .int('Token Count must be an integer')
-    .positive('Token Count must be greated than 0'),
+    .positive('Token Amount must be greated than 0'),
 });
 
 export const MintTokenView = ({
@@ -37,14 +36,8 @@ export const MintTokenView = ({
   });
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
-  const [formStatus, setFormStatus] = useState<FormStatus>({
-    loading: false,
-    error: null,
-    success: null,
-  });
 
   const onSubmit = async (data: any) => {
-    setFormStatus({ ...formStatus, loading: true });
     writeContract({
       address: TEST_ADDRESS,
       abi: parseAbi(['function mint(uint256 tokenId)']),
@@ -52,26 +45,26 @@ export const MintTokenView = ({
       args: [parseEther(`${data.token_count}`)],
     });
   };
+  const formattedError = error as TransactionExecutionError;
 
   return (
     <div className="flex flex-col gap-4">
-      <Form disabled={isPending} layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        <Form.Item label="Token Count" required tooltip="Number of Tokens to mint.">
-          <Controller
-            control={control}
-            name="token_count"
-            render={({ field }) => (
-              <InputNumber className="w-full" size="large" min={0} {...field} />
-            )}
-          />
-          {errors.token_count && (
-            <p className="text-error">{errors.token_count.message as string}</p>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          control={control}
+          name="token_count"
+          render={({ field }) => (
+            <AmountInput
+              disabled={isPending}
+              min={0}
+              {...field}
+              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              errorMessage={errors?.token_count?.message as string}
+            />
           )}
-        </Form.Item>
+        />
         <div className="flex flex-col gap-2">
-          {error && (
-            <Alert message={(error.name as string) + ' : ' + error.message} type="error" showIcon />
-          )}
+          {formattedError && <Alert message={formattedError.shortMessage} type="error" showIcon />}
           {hash && (
             <Alert
               message={`Transaction Completed. Txn Hash: ${hash}`}
@@ -92,19 +85,17 @@ export const MintTokenView = ({
           )}
         </div>
 
-        <Form.Item>
-          <Button
-            size="large"
-            block
-            className="bg-primary"
-            type="primary"
-            htmlType="submit"
-            loading={isPending}
-          >
-            Mint Tokens
-          </Button>
-        </Form.Item>
-      </Form>
+        <Button
+          size="large"
+          block
+          className="bg-primary"
+          type="primary"
+          htmlType="submit"
+          loading={isPending}
+        >
+          Mint Tokens
+        </Button>
+      </form>
     </div>
   );
 };
