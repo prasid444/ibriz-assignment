@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from 'react';
-
+import React from 'react';
 interface AmountInputProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string;
   onChangeNumber: (value: number | null) => void;

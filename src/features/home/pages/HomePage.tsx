@@ -1,16 +1,10 @@
 /* eslint-disable no-console */
 import useWallet from 'features/contract/hooks/useWallet';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDisconnect } from 'wagmi';
 
 export const HomePage = () => {
   const { availableConnection } = useWallet();
-  const { disconnect } = useDisconnect();
-  useEffect(() => {
-    // disconnect any existing connection
-    disconnect();
-  }, []);
   return (
     <div className="h-screen bg-primary flex flex-row items-center justify-center">
       <div className="flex flex-col gap-6 justify-center items-center md:max-w-[600px] p-2 md:p-4">
@@ -34,37 +28,6 @@ export const HomePage = () => {
             >
               Continue
             </Link>
-
-            {/* {connectors.map((value) => {
-              console.log('icon', value, value.icon);
-              return (
-                <Button
-                  key={value.id}
-                  size="large"
-                  type="primary"
-                  icon={<img className="h-8" src={value.icon} />}
-                  className="bg-primary min-w-[200px]"
-                  onClick={() => {
-                    connect(
-                      { chainId: 5, connector: value },
-                      {
-                        onSuccess(data, variables, context) {
-                          navigate({
-                            pathname: `/contract/${data.accounts[0]}`,
-                          });
-                        },
-                        onError(error, variables, context) {
-                          message.error(error.message);
-                        },
-                        onSettled(data, error, variables, context) {},
-                      }
-                    );
-                  }}
-                >
-                  {value.name}
-                </Button>
-              );
-            })} */}
           </div>
         )}
       </div>

@@ -1,11 +1,10 @@
-/* eslint-disable no-console */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button } from 'antd';
 import { AmountInput } from 'components';
 import { TEST_ADDRESS } from 'constants/address';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Address, parseAbi, parseEther, TransactionExecutionError } from 'viem';
+import { parseAbi, parseEther, TransactionExecutionError } from 'viem';
 import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
@@ -20,13 +19,7 @@ const schema = z.object({
     .positive('Token Amount must be greated than 0'),
 });
 
-export const MintTokenView = ({
-  address,
-  onClickNext,
-}: {
-  address: Address;
-  onClickNext: () => void;
-}) => {
+export const MintTokenView = ({ onClickNext }: { onClickNext: () => void }) => {
   const { data: hash, error, isPending, writeContract } = useWriteContract();
   const { balance, refetchBalance } = useWallet();
 

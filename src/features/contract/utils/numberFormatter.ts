@@ -20,6 +20,6 @@ const convertBigIntToText = (number: bigint) => {
     unitIndex++;
   }
 
-  return number.toString() + ' ' + units[unitIndex];
+  return `${number.toString()}${unitIndex > 0 ? ` ${units[unitIndex]}` : ``}`;
 };
 export { convertBigIntToText };
