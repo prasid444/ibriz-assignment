@@ -26,7 +26,7 @@ export const ContractPage = () => {
     );
   }
 
-  const walletOptionMenu: MenuProps['items'] = availableConnection.map((value, index) => {
+  let walletOptionMenu: MenuProps['items'] = availableConnection.map((value, index) => {
     return {
       key: value.id,
       icon: <img className="h-4 w-4 object-cover" src={value.icon} alt={value.name} />,
@@ -36,6 +36,14 @@ export const ContractPage = () => {
       onClick: () => connect(value),
     };
   });
+  if (walletOptionMenu.length === 0) {
+    walletOptionMenu = [
+      {
+        key: 'id',
+        label: 'No connectors found',
+      },
+    ];
+  }
   return (
     <div className="h-screen bg-gray-200 flex flex-col ">
       <div className="flex py-2 px-4 items-center bg-[#DF5627]">
