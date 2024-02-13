@@ -83,7 +83,7 @@ export const ContractPage = () => {
         message="Please connect with wallet to continue"
       >
         <div className="p-2 md:p-4 flex flex-row flex-1 items-center justify-center">
-          <div className="bg-white h-full md:h-fit rounded-lg p-4 w-full md:p-6 flex flex-col gap-8">
+          <div className="bg-white h-full md:h-fit rounded-lg p-4 w-full md:max-w-[600px] md:p-6 flex flex-col gap-8">
             <center>
               <label
                 className={`w-[200px] h-[40px] rounded-[23px] border border-gray-300 bg-white flex items-center cursor-pointer relative box-border`}
