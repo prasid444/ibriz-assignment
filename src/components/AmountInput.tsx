@@ -17,7 +17,7 @@ const AmountInput = ({
           type="number"
           step="any"
           placeholder={placeholder}
-          className="block h-12 w-full rounded-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-primary"
+          className="block h-12 w-full  rounded-full px-4 py-2 border border-primary focus:outline-none focus:border-primary"
           {...inputProps}
           onChange={(e) => {
             const value = e.target.value;

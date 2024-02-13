@@ -86,7 +86,7 @@ export const ContractPage = () => {
           <div className="bg-white h-full md:h-fit rounded-lg p-4 w-full md:max-w-[600px] md:p-6 flex flex-col gap-8">
             <center>
               <label
-                className={`w-[200px] h-[40px] rounded-[23px] border border-gray-300 bg-white flex items-center cursor-pointer relative box-border`}
+                className={`w-[200px] h-[40px] rounded-[23px] border border-primary bg-white flex items-center cursor-pointer relative box-border`}
               >
                 <input
                   type="checkbox"
@@ -95,17 +95,17 @@ export const ContractPage = () => {
                   hidden
                 />
                 <span
-                  className={`text-red-600 font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 0 ? 'text-white' : ''} transition duration-200`}
+                  className={`text-primary font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 0 ? 'text-white' : ''} transition duration-200`}
                 >
                   Mint
                 </span>
                 <span
-                  className={`text-red-600 font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 1 ? 'text-white' : ''} transition duration-200`}
+                  className={`text-primary font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 1 ? 'text-white' : ''} transition duration-200`}
                 >
                   Transfer
                 </span>
                 <div
-                  className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-red-600 to-orange-400 rounded-full transition duration-200 ${activeStep === 1 ? 'transform translate-x-full' : ''}`}
+                  className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition duration-200 ${activeStep === 1 ? 'transform translate-x-full' : ''}`}
                 ></div>
               </label>
             </center>
