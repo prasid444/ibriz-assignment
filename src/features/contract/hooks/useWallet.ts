@@ -23,6 +23,7 @@ interface UseWalletReturnType {
   availableConnection: ReadonlyArray<Connector>;
   connect: (connection: Connector) => void;
   disconnect: () => void;
+  refetchBalance: () => void;
 }
 
 const useWallet = (): UseWalletReturnType => {
@@ -34,14 +35,20 @@ const useWallet = (): UseWalletReturnType => {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { address } = useAccount();
-  const { data: balance } = useBalance({ address });
+  const { data: balance, refetch: refetchBalance } = useBalance({ address });
 
-  console.log('address', address, balance);
+  console.log('address', address);
+  console.log('balance', balance);
   const init = () => {
     setStatus({
       isConnected: false,
       isConnecting: false,
     });
+  };
+
+  const refetchNewBalance = () => {
+    console.log('refetch trigger');
+    refetchBalance();
   };
 
   const connectWallet = async (connector: Connector) => {
@@ -79,6 +86,7 @@ const useWallet = (): UseWalletReturnType => {
     balance: balance,
     address: address,
     disconnect: disconnectWallet,
+    refetchBalance: refetchNewBalance,
   };
 };
 

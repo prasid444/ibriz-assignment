@@ -9,6 +9,7 @@ import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
 
 import { isValidEthereumAddress } from '../utils/addressValidator';
+import useWallet from '../hooks/useWallet';
 
 const schema = z.object({
   eth_address: z
@@ -31,12 +32,17 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
   const {
     register,
     handleSubmit,
+    watch,
     control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
   });
   const { data: hash, error, isPending, writeContract, reset } = useWriteContract();
+
+  const formAmount = watch('amount');
+
+  const { balance, refetchBalance } = useWallet();
 
   const onSubmit = async (data: any) => {
     writeContract({
@@ -73,6 +79,13 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
         />
         <div className="flex flex-col gap-2">
           {formattedError && <Alert message={formattedError.shortMessage} type="error" showIcon />}
+          {formAmount > (balance?.value ?? 0) && (
+            <Alert
+              message={`You only have ${balance?.value} DAI in your wallet`}
+              type="error"
+              showIcon
+            />
+          )}
           {hash && (
             <Alert
               message={`Transaction Hash: ${hash}`}
