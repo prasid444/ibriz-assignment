@@ -36,7 +36,7 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
   } = useForm({
     resolver: zodResolver(schema),
   });
-  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const { data: hash, error, isPending, writeContract, reset } = useWriteContract();
 
   const onSubmit = async (data: any) => {
     writeContract({
@@ -66,7 +66,7 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
               min={0}
               {...field}
               placeholder="Amount To Send"
-              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              onChangeNumber={(value) => field.onChange(value)}
               errorMessage={errors?.amount?.message as string}
             />
           )}

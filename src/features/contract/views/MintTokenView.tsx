@@ -58,7 +58,7 @@ export const MintTokenView = ({
               disabled={isPending}
               min={0}
               {...field}
-              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              onChangeNumber={(value) => field.onChange(value)}
               errorMessage={errors?.token_count?.message as string}
             />
           )}
