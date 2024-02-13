@@ -3,27 +3,20 @@
 import { Button, Dropdown, MenuProps, Spin } from 'antd';
 import { BlurWrapper } from 'components';
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useSpring } from 'react-spring';
+import { useParams } from 'react-router-dom';
 import { Address, formatEther } from 'viem';
-import { useDisconnect } from 'wagmi';
 
 import useWallet from '../hooks/useWallet';
+import { convertBigIntToText } from '../utils/numberFormatter';
 import { MintTokenView } from '../views/MintTokenView';
 import { TransferTokenView } from '../views/TransferTokenView';
+
 export const ContractPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { walletStatus, availableConnection, connect, balance, disconnect } = useWallet();
-  const navigate = useNavigate();
 
   const params = useParams();
   const { id: address } = params ?? {};
-
-  const { transform, opacity } = useSpring({
-    opacity: activeStep === 1 ? 1 : 0,
-    transform: `perspective(600px) rotateX(${activeStep === 1 ? 180 : 0}deg)`,
-    config: { mass: 5, tension: 500, friction: 80 },
-  });
 
   if (walletStatus.isConnecting) {
     return (
@@ -53,10 +46,10 @@ export const ContractPage = () => {
           {balance ? (
             <div
               className="text-white text-xs"
-              title={`${formatEther(balance?.value as bigint)} ${balance?.symbol}`}
+              title={`${formatEther(balance?.value as bigint, 'wei')} ${balance?.symbol}`}
             >
-              Balance: {parseFloat(formatEther(balance?.value as bigint)).toFixed(5)}{' '}
-              {balance?.symbol}
+              Balance: {convertBigIntToText(balance?.value)} DAI
+              {/* TODO: use dynamic instead of DAI */}
             </div>
           ) : (
             <div>
@@ -90,10 +83,10 @@ export const ContractPage = () => {
         message="Please connect with wallet to continue"
       >
         <div className="p-2 md:p-4 flex flex-row flex-1 items-center justify-center">
-          <div className="bg-white h-full md:h-fit rounded-lg p-4 w-full md:p-6 flex flex-col gap-8">
+          <div className="bg-white h-full md:h-fit rounded-lg p-4 w-full md:max-w-[600px] md:p-6 flex flex-col gap-8">
             <center>
               <label
-                className={`w-[200px] h-[40px] rounded-[23px] border border-gray-300 bg-white flex items-center cursor-pointer relative box-border`}
+                className={`w-[200px] h-[40px] rounded-[23px] border border-primary bg-white flex items-center cursor-pointer relative box-border`}
               >
                 <input
                   type="checkbox"
@@ -102,17 +95,17 @@ export const ContractPage = () => {
                   hidden
                 />
                 <span
-                  className={`text-red-600 font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 0 ? 'text-white' : ''} transition duration-200`}
+                  className={`text-primary font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 0 ? 'text-white' : ''} transition duration-200`}
                 >
                   Mint
                 </span>
                 <span
-                  className={`text-red-600 font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 1 ? 'text-white' : ''} transition duration-200`}
+                  className={`text-primary font-bold w-1/2 text-xs inline-block text-center relative z-10 uppercase ${activeStep === 1 ? 'text-white' : ''} transition duration-200`}
                 >
                   Transfer
                 </span>
                 <div
-                  className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-red-600 to-orange-400 rounded-full transition duration-200 ${activeStep === 1 ? 'transform translate-x-full' : ''}`}
+                  className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition duration-200 ${activeStep === 1 ? 'transform translate-x-full' : ''}`}
                 ></div>
               </label>
             </center>
