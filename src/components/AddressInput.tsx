@@ -1,5 +1,4 @@
-import { InputHTMLAttributes } from 'react';
-
+import React, { InputHTMLAttributes } from 'react';
 interface AddressInputProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string;
 }

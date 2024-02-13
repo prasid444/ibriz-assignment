@@ -43,20 +43,17 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
+#### `yarn check-types`
+
+This executes `tsc --pretty --noEmit --jsx react --skipLibCheck` .\
+You can run this before commiting to check all types based on prettier and eslint config of this repo.
+
 #### `yarn build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
 ## Learn More
 
-[Wagmi](https://wagmi.sh/)
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [Wagmi](https://wagmi.sh/)
+- [Tankstack Query](https://tanstack.com/query/latest)
