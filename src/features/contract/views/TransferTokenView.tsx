@@ -1,18 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, Divider, Form, Input, InputNumber } from 'antd';
+import { Alert, Button } from 'antd';
+import { AddressInput, AmountInput } from 'components';
 import { TEST_ADDRESS } from 'constants/address';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { parseAbi, parseEther } from 'viem';
+import { parseAbi, parseEther, TransactionExecutionError } from 'viem';
 import { useWriteContract } from 'wagmi';
 import { z } from 'zod';
+
+import { isValidEthereumAddress } from '../utils/addressValidator';
 
 const schema = z.object({
   eth_address: z
     .string({
       invalid_type_error: 'Token Count should be a number',
     })
-    .min(1, 'Ether Address is required'),
+    .min(1, 'Ether Address is required')
+    .refine((val) => isValidEthereumAddress(val), {
+      message: 'Invalid Ethereum address',
+    }),
   amount: z
     .number({
       required_error: 'Amount is required',
@@ -30,22 +36,9 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
   } = useForm({
     resolver: zodResolver(schema),
   });
-  // const {
-  //   data: hash,
-  //   sendTransaction,
-  //   isError,
-  //   isPending,
-  //   isSuccess,
-  //   isPaused,
-  //   error,
-  // } = useSendTransaction();
-  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const { data: hash, error, isPending, writeContract, reset } = useWriteContract();
 
   const onSubmit = async (data: any) => {
-    //   sendTranwsaction({
-    //     to: data?.eth_address,
-    //     value: parseEther(`${data?.amount}`)
-    // });
     writeContract({
       address: TEST_ADDRESS,
       abi: parseAbi(['function transfer(address receipientId, uint256 tokenId)']),
@@ -54,37 +47,32 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
     });
   };
 
+  const formattedError = error as TransactionExecutionError;
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-primary text-2xl font-bold text-center">Transfer Token Form</h1>
-      <Divider />
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        <Form.Item
-          label="Receipient's Ether Address"
-          tooltip="Enter the ether address of receipient."
-          required
-        >
-          <Controller
-            control={control}
-            name="eth_address"
-            render={({ field }) => <Input className="w-full" size="large" {...field} />}
-          />
-          {errors.eth_address && (
-            <p className="text-error">{errors.eth_address.message as string}</p>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          control={control}
+          name="eth_address"
+          render={({ field }) => <AddressInput {...field} placeholder="Recipient Address" />}
+        />
+        {errors.eth_address && <p className="text-error">{errors.eth_address.message as string}</p>}
+        <Controller
+          control={control}
+          name="amount"
+          render={({ field }) => (
+            <AmountInput
+              disabled={isPending}
+              min={0}
+              {...field}
+              placeholder="Amount To Send"
+              onChangeNumber={(value) => field.onChange(value)}
+              errorMessage={errors?.amount?.message as string}
+            />
           )}
-        </Form.Item>
-        <Form.Item label="Amount" required tooltip="Amount to be transferred">
-          <Controller
-            control={control}
-            name="amount"
-            render={({ field }) => (
-              <InputNumber className="w-full" size="large" min={0} {...field} />
-            )}
-          />
-          {errors.amount && <p className="text-error">{errors.amount.message as string} </p>}
-        </Form.Item>
+        />
         <div className="flex flex-col gap-2">
-          {error && <Alert message={error.message} type="error" showIcon />}
+          {formattedError && <Alert message={formattedError.shortMessage} type="error" showIcon />}
           {hash && (
             <Alert
               message={`Transaction Hash: ${hash}`}
@@ -104,21 +92,17 @@ export const TransferTokenView = ({ onClickPrevious }: { onClickPrevious: () => 
             />
           )}
         </div>
-        <div className="py-4">
-          <Form.Item>
-            <Button
-              size="large"
-              block
-              className="bg-primary"
-              type="primary"
-              htmlType="submit"
-              loading={isPending}
-            >
-              Transfer
-            </Button>
-          </Form.Item>
-        </div>
-      </Form>
+        <Button
+          size="large"
+          block
+          className="bg-primary"
+          type="primary"
+          htmlType="submit"
+          loading={isPending}
+        >
+          Transfer
+        </Button>
+      </form>
     </div>
   );
 };
