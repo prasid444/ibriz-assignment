@@ -18,7 +18,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <Routes>
             <Route path="/" Component={HomePage} />
-            <Route path="/contract/:id" Component={ContractPage} />
+            <Route path="/contract" Component={ContractPage} />
             {/* TODO: To add redirection or no page found */}
             <Route path="*" Component={HomePage} />
           </Routes>
