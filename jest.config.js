@@ -9,6 +9,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '^constants/address$': '<rootDir>/src/constants/address.ts',
+    '^components$': '<rootDir>/src/components',
     // Add other module mappings as needed
   },
 };

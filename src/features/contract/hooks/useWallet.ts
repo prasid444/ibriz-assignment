@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { message } from 'antd';
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
@@ -37,8 +36,6 @@ const useWallet = (): UseWalletReturnType => {
   const { address } = useAccount();
   const { data: balance, refetch: refetchBalance } = useBalance({ address });
 
-  console.log('address', address);
-  console.log('balance', balance);
   const init = () => {
     setStatus({
       isConnected: false,
@@ -47,7 +44,6 @@ const useWallet = (): UseWalletReturnType => {
   };
 
   const refetchNewBalance = () => {
-    console.log('refetch trigger');
     refetchBalance();
   };
 
@@ -73,7 +69,6 @@ const useWallet = (): UseWalletReturnType => {
   };
 
   useEffect(() => {
-    console.log('this1', address);
     if (address !== undefined) {
       setStatus({ ...status, isConnected: true });
     }

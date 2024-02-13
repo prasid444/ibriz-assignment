@@ -3,8 +3,7 @@
 import { Button, Dropdown, MenuProps, Spin } from 'antd';
 import { BlurWrapper } from 'components';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Address, formatEther } from 'viem';
+import { formatEther } from 'viem';
 
 import useWallet from '../hooks/useWallet';
 import { convertBigIntToText } from '../utils/numberFormatter';
@@ -14,9 +13,6 @@ import { TransferTokenView } from '../views/TransferTokenView';
 export const ContractPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { walletStatus, availableConnection, connect, balance, disconnect } = useWallet();
-
-  const params = useParams();
-  const { id: address } = params ?? {};
 
   if (walletStatus.isConnecting) {
     return (
@@ -118,7 +114,7 @@ export const ContractPage = () => {
               </label>
             </center>
             {activeStep === 0 ? (
-              <MintTokenView address={address as Address} onClickNext={() => setActiveStep(1)} />
+              <MintTokenView onClickNext={() => setActiveStep(1)} />
             ) : (
               <TransferTokenView onClickPrevious={() => setActiveStep(0)} />
             )}
